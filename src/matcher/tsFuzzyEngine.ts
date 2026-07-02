@@ -83,7 +83,7 @@ function extendGapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig)
   const anchor = seed.docPos - seed.patPos;
   const startMin = Math.max(0, anchor - maxDistance);
   const startMax = Math.min(doc.length - 1, anchor + maxDistance);
-  const minLength = Math.max(1, Math.min(config.minMatchLength, pat.length - maxDistance));
+  const minLength = Math.max(1, pat.length - maxDistance);
   const maxLength = pat.length + maxDistance;
   let best: ExtendedMatch | undefined;
 
@@ -101,7 +101,7 @@ function extendGapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig)
       const score = Math.max(pat.length, candidate.length) - distance;
       const match: ExtendedMatch = { start, end, mismatches: distance, score };
 
-      if (!best || isBetterGappedMatch(match, best, seed.docPos, seed.docPos + config.kmerSize)) {
+      if (!best || isBetterGappedMatch(match, best, pat.length, seed.docPos, seed.docPos + config.kmerSize)) {
         best = match;
       }
     }
@@ -110,7 +110,7 @@ function extendGapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig)
   return best;
 }
 
-function isBetterGappedMatch(candidate: ExtendedMatch, current: ExtendedMatch, seedStart: number, seedEnd: number): boolean {
+function isBetterGappedMatch(candidate: ExtendedMatch, current: ExtendedMatch, patternLength: number, seedStart: number, seedEnd: number): boolean {
   if (candidate.mismatches !== current.mismatches) {
     return candidate.mismatches < current.mismatches;
   }
@@ -121,10 +121,10 @@ function isBetterGappedMatch(candidate: ExtendedMatch, current: ExtendedMatch, s
     return candidateCoversSeed;
   }
 
-  const candidateLengthDelta = Math.abs(candidate.end - candidate.start);
-  const currentLengthDelta = Math.abs(current.end - current.start);
+  const candidateLengthDelta = Math.abs(candidate.end - candidate.start - patternLength);
+  const currentLengthDelta = Math.abs(current.end - current.start - patternLength);
   if (candidateLengthDelta !== currentLengthDelta) {
-    return candidateLengthDelta > currentLengthDelta;
+    return candidateLengthDelta < currentLengthDelta;
   }
 
   return (candidate.score ?? 0) > (current.score ?? 0);
@@ -175,63 +175,25 @@ function levenshteinWithin(pattern: string, candidate: string, maxDistance: numb
 }
 
 function extendUngapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig): ExtendedMatch | undefined {
-  const seedEnd = seed.docPos + config.kmerSize;
-  const left = extendSide(doc, pat, seed.docPos - 1, seed.patPos - 1, -1, config.xDrop);
-  const right = extendSide(doc, pat, seed.docPos + config.kmerSize, seed.patPos + config.kmerSize, 1, config.xDrop);
-  const start = left.boundary + 1;
-  const end = right.boundary;
-
-  if (start < 0 || end > doc.length || end <= start) {
+  const start = seed.docPos - seed.patPos;
+  const end = start + pat.length;
+  if (start < 0 || end > doc.length) {
     return undefined;
   }
 
-  return {
-    start,
-    end,
-    mismatches: left.mismatches + right.mismatches,
-    score: left.score + right.score + config.kmerSize
-  };
+  let mismatches = 0;
+  const maxMismatches = Math.ceil(pat.length * config.maxErrorRate);
+  for (let index = 0; index < pat.length; index += 1) {
+    if (doc[start + index] !== pat[index]) {
+      mismatches += 1;
 
-  function extendSide(
-    documentText: string,
-    pattern: string,
-    docPos: number,
-    patPos: number,
-    step: 1 | -1,
-    xDrop: number
-  ): { boundary: number; score: number; mismatches: number } {
-    let currentDoc = docPos;
-    let currentPat = patPos;
-    let score = 0;
-    let bestScore = 0;
-    let bestBoundary = step === 1 ? seedEnd : seed.docPos - 1;
-    let mismatches = 0;
-    let bestMismatches = 0;
-
-    while (currentDoc >= 0 && currentDoc < documentText.length && currentPat >= 0 && currentPat < pattern.length) {
-      if (documentText[currentDoc] === pattern[currentPat]) {
-        score += 1;
-      } else {
-        score -= 2;
-        mismatches += 1;
+      if (mismatches > maxMismatches) {
+        return undefined;
       }
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestBoundary = step === 1 ? currentDoc + 1 : currentDoc - 1;
-        bestMismatches = mismatches;
-      }
-
-      if (bestScore - score >= xDrop) {
-        break;
-      }
-
-      currentDoc += step;
-      currentPat += step;
     }
-
-    return { boundary: bestBoundary, score: bestScore, mismatches: bestMismatches };
   }
+
+  return { start, end, mismatches, score: pat.length - mismatches };
 }
 
 function mergeMatches(matches: ExtendedMatch[]): MatchResult[] {

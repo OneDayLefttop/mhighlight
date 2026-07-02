@@ -53,4 +53,22 @@ describe('TsFuzzyEngine', () => {
 
     expect(matches).toEqual([{ start: 3, end: 8, score: expect.any(Number) }]);
   });
+
+  it('rejects isolated k-mer fragments instead of accepting partial query matches', () => {
+    const engine = new TsFuzzyEngine();
+    const fullQueryConfig: FuzzyConfig = { ...config, kmerSize: 7, minMatchLength: 8 };
+
+    const matches = engine.search('xx GCTCTTCC yy', 'TCAGACGTGTGCTCTTCCATCT', fullQueryConfig, true);
+
+    expect(matches).toEqual([]);
+  });
+
+  it('covers the whole query-aligned span when indels appear in sequence text', () => {
+    const engine = new TsFuzzyEngine();
+    const indelConfig: FuzzyConfig = { ...config, kmerSize: 7, minMatchLength: 8, allowIndel: true };
+
+    const matches = engine.search('xx TCAGACGTGTGCTCTTCC-ATCT yy', 'TCAGACGTGTGCTCTTCCATCT', indelConfig, true);
+
+    expect(matches).toEqual([{ start: 3, end: 26, score: expect.any(Number) }]);
+  });
 });
