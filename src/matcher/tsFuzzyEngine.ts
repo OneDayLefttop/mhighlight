@@ -91,6 +91,10 @@ function extendGapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig)
     for (let length = minLength; length <= maxLength && start + length <= doc.length; length += 1) {
       const end = start + length;
       const candidate = doc.slice(start, end);
+      if (!hasValidCandidateBoundaries(candidate, pat)) {
+        continue;
+      }
+
       const allowedDistance = Math.max(maxDistance, Math.ceil(Math.max(pat.length, candidate.length) * config.maxErrorRate));
       const distance = levenshteinWithin(pat, candidate, allowedDistance);
 
@@ -108,6 +112,19 @@ function extendGapped(doc: string, pat: string, seed: Seed, config: FuzzyConfig)
   }
 
   return best;
+}
+
+function hasValidCandidateBoundaries(candidate: string, pattern: string): boolean {
+  if (candidate.length === 0) {
+    return false;
+  }
+
+  const patternStartsWithWhitespace = /\s/.test(pattern[0]);
+  const patternEndsWithWhitespace = /\s/.test(pattern[pattern.length - 1]);
+  const candidateStartsWithWhitespace = /\s/.test(candidate[0]);
+  const candidateEndsWithWhitespace = /\s/.test(candidate[candidate.length - 1]);
+
+  return (patternStartsWithWhitespace || !candidateStartsWithWhitespace) && (patternEndsWithWhitespace || !candidateEndsWithWhitespace);
 }
 
 function isBetterGappedMatch(candidate: ExtendedMatch, current: ExtendedMatch, patternLength: number, seedStart: number, seedEnd: number): boolean {

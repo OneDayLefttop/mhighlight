@@ -71,4 +71,16 @@ describe('TsFuzzyEngine', () => {
 
     expect(matches).toEqual([{ start: 3, end: 26, score: expect.any(Number) }]);
   });
+
+  it('does not include formatting whitespace before a gapped sequence candidate', () => {
+    const engine = new TsFuzzyEngine();
+    const indelConfig: FuzzyConfig = { ...config, kmerSize: 7, minMatchLength: 8, allowIndel: true };
+
+    const text = 'Query  646  CAG-CGTGTGCTCTTCCGATCT  666';
+    const matches = engine.search(text, 'TCAGACGTGTGCTCTTCCGATCT', indelConfig, true);
+
+    expect(matches).toEqual([{ start: 12, end: 34, score: expect.any(Number) }]);
+    expect(text[matches[0].start]).toBe('C');
+    expect(text[matches[0].end]).toBe(' ');
+  });
 });

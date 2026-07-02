@@ -2,7 +2,7 @@
   "name": "mhighlight",
   "displayName": "MHighlight",
   "description": "Multi-mode string, wildcard, regex, and fuzzy highlighting for VS Code.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "local",
   "engines": {
     "vscode": "^1.90.0"
