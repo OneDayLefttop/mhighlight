@@ -10,7 +10,7 @@ export function getFuzzyDefaults(): FuzzyConfig {
     maxErrorRate: config.get('maxErrorRate', 0.2),
     minMatchLength: config.get('minMatchLength', 8),
     xDrop: config.get('xDrop', 10),
-    allowIndel: config.get('allowIndel', false)
+    allowIndel: config.get('allowIndel', true)
   };
 }
 

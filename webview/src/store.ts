@@ -20,7 +20,7 @@ export const useHighlightStore = create<HighlightState>((set) => ({
     maxErrorRate: 0.2,
     minMatchLength: 8,
     xDrop: 10,
-    allowIndel: false
+    allowIndel: true
   },
   openFiles: [],
   setRules: (rules) => set({ rules }),

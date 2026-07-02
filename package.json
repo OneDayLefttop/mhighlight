@@ -2,7 +2,7 @@
   "name": "mhighlight",
   "displayName": "MHighlight",
   "description": "Multi-mode string, wildcard, regex, and fuzzy highlighting for VS Code.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "publisher": "local",
   "engines": {
     "vscode": "^1.90.0"
@@ -74,7 +74,7 @@
         },
         "mhighlight.fuzzyDefaults.allowIndel": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Allow insertion and deletion differences in fuzzy matching."
         }
       }

@@ -65,7 +65,7 @@ Press F5 in VS Code to launch an Extension Development Host, then run `MHighligh
     "maxErrorRate": 0.2,
     "minMatchLength": 8,
     "xDrop": 10,
-    "allowIndel": false
+    "allowIndel": true
   }
 }
 ```

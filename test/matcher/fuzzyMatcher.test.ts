@@ -83,4 +83,27 @@ describe('TsFuzzyEngine', () => {
     expect(text[matches[0].start]).toBe('C');
     expect(text[matches[0].end]).toBe(' ');
   });
+
+  it('finds full BLAST-like fuzzy spans with terminal bases and mixed indels', () => {
+    const engine = new TsFuzzyEngine();
+    const indelConfig: FuzzyConfig = { ...config, kmerSize: 7, maxErrorRate: 0.2, minMatchLength: 8, allowIndel: true };
+    const pattern = 'TCAGACGTGTGCTCTTCCATCT';
+    const text = [
+      'Query  526  TCAGACGTGTGCTCTTCC-ATCT  547',
+      'Sbjct  23   TCAGACGTGTGCTCTTCCGATCT  1',
+      'Query  646  CAG-CGTGTGCTCTTCCGATCT  666',
+      'Sbjct  22   CAGACGTGTGCTCTTCCGATCT  1'
+    ].join('\n');
+
+    const matches = engine.search(text, pattern, indelConfig, true);
+    const matchedText = matches.map((match) => text.slice(match.start, match.end));
+
+    expect(matchedText).toEqual([
+      'TCAGACGTGTGCTCTTCC-ATCT',
+      'TCAGACGTGTGCTCTTCCGATCT',
+      'CAG-CGTGTGCTCTTCCGATCT',
+      'CAGACGTGTGCTCTTCCGATCT'
+    ]);
+    expect(matchedText[0].endsWith('T')).toBe(true);
+  });
 });
