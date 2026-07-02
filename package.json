@@ -2,7 +2,7 @@
   "name": "mhighlight",
   "displayName": "MHighlight",
   "description": "Multi-mode string, wildcard, regex, and fuzzy highlighting for VS Code.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "local",
   "engines": {
     "vscode": "^1.90.0"
@@ -13,6 +13,7 @@
   "activationEvents": [
     "onCommand:mhighlight.openPanel",
     "onCommand:mhighlight.triggerManual",
+    "onCommand:mhighlight.addSelectionToFileRules",
     "onCommand:mhighlight.clear",
     "onCommand:mhighlight.importRules",
     "onCommand:mhighlight.exportRules"
@@ -27,6 +28,10 @@
       {
         "command": "mhighlight.triggerManual",
         "title": "MHighlight: Trigger Manual Highlight"
+      },
+      {
+        "command": "mhighlight.addSelectionToFileRules",
+        "title": "MHighlight: Add Selection to File Rules"
       },
       {
         "command": "mhighlight.clear",

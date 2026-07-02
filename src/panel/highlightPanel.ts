@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { getFuzzyDefaults } from '../config/fuzzyDefaults';
 import { exportRules, importRules } from '../config/io';
 import { getOpenFileContexts, getTargetTextDocument } from '../editorContext';
+import type { HighlightEngine } from '../highlighter/highlightEngine';
 import type { RuleStore } from '../highlighter/ruleStore';
 import type { HighlightRule } from '../types';
 import type { ExtensionToPanelMessage, PanelToExtensionMessage } from './messageProtocol';
@@ -12,7 +13,8 @@ export class HighlightPanel implements vscode.Disposable {
 
   constructor(
     private readonly context: vscode.ExtensionContext,
-    private readonly ruleStore: RuleStore
+    private readonly ruleStore: RuleStore,
+    private readonly highlightEngine: HighlightEngine
   ) {
     this.disposables.push(
       this.ruleStore.onDidChangeRules((rules) => this.post({ type: 'rulesUpdated', rules })),
@@ -73,7 +75,7 @@ export class HighlightPanel implements vscode.Disposable {
         this.ruleStore.update(normalizeIncomingRule(message.rule));
         break;
       case 'deleteRule':
-        this.ruleStore.delete(message.id);
+        this.deleteRule(message.id);
         break;
       case 'toggleRule':
         this.toggleRule(message.id, message.enabled);
@@ -112,6 +114,15 @@ export class HighlightPanel implements vscode.Disposable {
     }
 
     this.ruleStore.update({ ...rule, enabled });
+  }
+
+  private deleteRule(id: string): void {
+    const rule = this.ruleStore.all().find((item) => item.id === id);
+    if (rule) {
+      this.highlightEngine.clearRule(rule);
+    }
+
+    this.ruleStore.delete(id);
   }
 
   private syncAll(): void {

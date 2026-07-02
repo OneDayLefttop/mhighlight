@@ -72,6 +72,15 @@ export class HighlightEngine implements vscode.Disposable {
     }
   }
 
+  clearRule(rule: HighlightRule): void {
+    const decoration = this.decorationManager.getDecoration(rule);
+    for (const editor of vscode.window.visibleTextEditors) {
+      if (this.matchesScope(rule, editor.document)) {
+        editor.setDecorations(decoration, []);
+      }
+    }
+  }
+
   dispose(): void {
     for (const timer of this.timers.values()) {
       clearTimeout(timer);

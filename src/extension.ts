@@ -12,10 +12,10 @@ export function activate(context: vscode.ExtensionContext): void {
   const decorationManager = new DecorationManager();
   const matcherFactory = new DefaultMatcherFactory(getFuzzyDefaults);
   const highlightEngine = new HighlightEngine(ruleStore, decorationManager, matcherFactory);
-  const panel = new HighlightPanel(context, ruleStore);
+  const panel = new HighlightPanel(context, ruleStore, highlightEngine);
 
   context.subscriptions.push(ruleStore, decorationManager, highlightEngine, panel);
-  registerCommands(context, panel, highlightEngine);
+  registerCommands(context, panel, highlightEngine, ruleStore);
   highlightEngine.applyAutoToVisibleEditors();
 }
 
