@@ -1,0 +1,189 @@
+:root {
+  color-scheme: light dark;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--vscode-button-border, transparent);
+  border-radius: 4px;
+  padding: 5px 10px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+input,
+select,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+}
+
+.app {
+  padding: 16px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.toolbar h1,
+.section h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.toolbar span {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.72;
+}
+
+.actions,
+.sectionHeader,
+.row,
+.fuzzy {
+  display: flex;
+  gap: 8px;
+}
+
+.actions,
+.row.wrap,
+.fuzzy {
+  flex-wrap: wrap;
+}
+
+.section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--vscode-panel-border);
+}
+
+.sectionHeader {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sectionActions {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rules {
+  display: grid;
+  gap: 10px;
+}
+
+.fileGroups {
+  display: grid;
+  gap: 14px;
+}
+
+.fileGroup {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--vscode-panel-border);
+}
+
+.fileGroup:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.fileGroupHeader {
+  display: grid;
+  gap: 3px;
+}
+
+.fileGroupHeader h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fileGroupHeader span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.64;
+}
+
+.rule {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 6px;
+  padding: 10px;
+  background: var(--vscode-sideBar-background);
+}
+
+.ruleActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.row > * {
+  flex: 1 1 120px;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+}
+
+label input[type='checkbox'] {
+  width: auto;
+}
+
+input[type='color'] {
+  max-width: 52px;
+  padding: 2px;
+}
+
+.fuzzy {
+  border-top: 1px solid var(--vscode-panel-border);
+  padding-top: 8px;
+}
+
+.fuzzy label {
+  flex: 1 1 120px;
+}
+
+.empty {
+  margin: 0;
+  opacity: 0.7;
+}

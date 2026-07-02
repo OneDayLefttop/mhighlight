@@ -1,0 +1,107 @@
+{
+  "name": "mhighlight",
+  "displayName": "MHighlight",
+  "description": "Multi-mode string, wildcard, regex, and fuzzy highlighting for VS Code.",
+  "version": "0.1.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:mhighlight.openPanel",
+    "onCommand:mhighlight.triggerManual",
+    "onCommand:mhighlight.clear",
+    "onCommand:mhighlight.importRules",
+    "onCommand:mhighlight.exportRules"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mhighlight.openPanel",
+        "title": "MHighlight: Open Highlight Panel"
+      },
+      {
+        "command": "mhighlight.triggerManual",
+        "title": "MHighlight: Trigger Manual Highlight"
+      },
+      {
+        "command": "mhighlight.clear",
+        "title": "MHighlight: Clear Highlights"
+      },
+      {
+        "command": "mhighlight.importRules",
+        "title": "MHighlight: Import Rules"
+      },
+      {
+        "command": "mhighlight.exportRules",
+        "title": "MHighlight: Export Rules"
+      }
+    ],
+    "configuration": {
+      "title": "MHighlight",
+      "properties": {
+        "mhighlight.fuzzyDefaults.kmerSize": {
+          "type": "number",
+          "default": 5,
+          "minimum": 2,
+          "maximum": 16,
+          "description": "Default k-mer size for fuzzy matching."
+        },
+        "mhighlight.fuzzyDefaults.maxErrorRate": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Default maximum mismatch error rate for fuzzy matching."
+        },
+        "mhighlight.fuzzyDefaults.minMatchLength": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 1024,
+          "description": "Default minimum fuzzy match length."
+        },
+        "mhighlight.fuzzyDefaults.xDrop": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Default x-drop threshold for fuzzy extension."
+        },
+        "mhighlight.fuzzyDefaults.allowIndel": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow insertion and deletion differences in fuzzy matching."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build:webview": "vite build",
+    "test": "vitest run",
+    "package:vsix": "vsce package",
+    "vscode:prepublish": "npm run build:webview && npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/vscode": "^1.90.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.4"
+  }
+}
