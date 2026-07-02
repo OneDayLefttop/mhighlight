@@ -5,31 +5,48 @@ MHighlight is a VS Code extension for highlighting configured patterns in the cu
 ## Features
 
 - Global rules and file-scoped rules.
+- File rules are grouped by concrete file. The panel Add button creates a rule for the current file.
+- Selected editor text can be added to the current file's rules from the Command Palette.
 - Multiple match types: string, wildcard, regex, and fuzzy.
 - Auto mode for live highlighting.
-- Manual mode for expensive or intentional searches.
-- Fuzzy rules are forced to manual mode by default.
+- Manual mode for expensive or intentional searches. Manual results stay visible until the file changes, highlights are cleared, or the rule is deleted.
+- Fuzzy rules are forced to manual mode by default and support mismatch plus insertion/deletion tolerant matching.
 - Fuzzy defaults are stored in VS Code Settings under `mhighlight.fuzzyDefaults.*`.
 
 ## Fuzzy Matching
 
 The fuzzy engine is a TypeScript `kmer-extend` implementation behind an `IFuzzyEngine` interface. It supports mismatch-tolerant matching, optional insertion/deletion handling with continuous highlight ranges, and merges overlapping ranges.
 
-Current v1 behavior:
+Current behavior:
 
 - Builds a k-mer index for the pattern.
 - Scans the document for seed hits.
-- Extends seeds in both directions with x-drop termination.
-- Accepts matches when `mismatches / length <= maxErrorRate`.
-- Does not implement insertion/deletion alignment yet.
+- Uses seed hits to find candidate anchors, then validates the full query span.
+- Accepts ungapped matches when the full query-length window is within `maxErrorRate`.
+- When `allowIndel` is enabled, validates nearby candidate windows with edit distance and returns continuous highlight ranges.
+- Rejects isolated k-mer fragments that do not satisfy full-query validation.
+- Avoids including formatting whitespace at fuzzy match boundaries when the query itself does not start or end with whitespace.
 
 ## Commands
 
 - `MHighlight: Open Highlight Panel`
 - `MHighlight: Trigger Manual Highlight`
+- `MHighlight: Add Selection to File Rules`
 - `MHighlight: Clear Highlights`
 - `MHighlight: Import Rules`
 - `MHighlight: Export Rules`
+
+## File Rules
+
+File rules are tied to a concrete file path rather than a glob by default. In the panel, click Add under File rules to create a rule for the current active file. Rules are displayed in per-file groups, and each rule can be duplicated, deleted, or moved to another existing file-rule group.
+
+To add text directly from the editor:
+
+1. Select one or more text ranges.
+2. Run `MHighlight: Add Selection to File Rules` from the Command Palette.
+3. The selected text is added as enabled string rules for the current file and highlighted immediately.
+
+Deleting a rule clears that rule's existing highlights from visible editors.
 
 ## Development
 
@@ -55,6 +72,19 @@ Press F5 in VS Code to launch an Extension Development Host, then run `MHighligh
       "matchType": "regex",
       "pattern": "TODO|FIXME",
       "backgroundColor": "rgba(255, 214, 10, 0.35)",
+      "caseSensitive": false,
+      "enabled": true,
+      "mode": "auto"
+    },
+    {
+      "id": "file-example",
+      "name": "Selected sequence",
+      "scope": "file",
+      "filePath": "C:/data/example.txt",
+      "fileName": "example.txt",
+      "matchType": "string",
+      "pattern": "TCAGACGTGTGCTCTTCCATCT",
+      "backgroundColor": "rgba(76, 201, 240, 0.35)",
       "caseSensitive": false,
       "enabled": true,
       "mode": "auto"
